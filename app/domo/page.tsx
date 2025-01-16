@@ -127,7 +127,7 @@ export default function WeddingGiftMemento() {
                 <div className={`${cormorant.className} space-y-4`}>
                   <div>
                     <p className="font-semibold">Special Engraving</p>
-                    <p className="text-sm">PMW • 18-01-25</p>
+                    <p className="text-sm">PMW - 18•01•25</p>
                   </div>
                   <div>
                     <p className="font-semibold">PMW Meaning</p>
