@@ -83,12 +83,11 @@ export default function WeddingGiftMemento() {
         </div>
 
         <Card className="bg-gray-50">
-          <CardHeader>
-            <CardTitle className={`${playfair.className} text-xl sm:text-2xl text-center`}>
-              Wedding Gift Details
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-8">
+            <p className={`${cormorant.className} text-center text-gray-600 italic text-lg sm:text-xl max-w-2xl mx-auto pt-6`}>
+              "Domo, whether you wear it or not, we hope this watch becomes a cherished part of your journey. A small token of our brotherhood and the countless memories we've shared together."
+            </p>
+            
             <div className="flex flex-col sm:flex-row items-center gap-6 justify-center">
               <div className="relative w-32 h-32 sm:w-40 sm:h-40 flex-shrink-0">
                 <Image
@@ -102,7 +101,7 @@ export default function WeddingGiftMemento() {
               <div className="space-y-4 text-center sm:text-left">
                 <div>
                   <h3 className={`${playfair.className} text-lg sm:text-xl`}>
-                    Longines HydroConquest 41mm
+                    Longines HydroConquest 43mm
                   </h3>
                   <p className={`${cormorant.className} text-gray-600`}>
                     Model: L37814566
