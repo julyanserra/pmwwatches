@@ -30,7 +30,9 @@ const eslintConfig = [
       // More flexible boolean prop naming
       "react/boolean-prop-naming": "off",
       // More flexible props spreading
-      "react/jsx-props-no-spreading": "off"
+      "react/jsx-props-no-spreading": "off",
+      'react/no-unescaped-entities': 'off',
+      '@next/next/no-page-custom-font': 'off'
     }
   }
 ];
