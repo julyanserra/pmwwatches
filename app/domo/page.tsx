@@ -9,8 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { ChevronRightIcon } from "@radix-ui/react-icons"
-
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 const playfair = Playfair_Display({ subsets: ['latin'] })
 const cormorant = Cormorant({ subsets: ['latin'], weight: ['300', '400', '600'] })
 
@@ -37,15 +36,7 @@ export default function WeddingGiftMemento() {
 
   return (
     <main className="min-h-screen bg-white text-black">
-      <nav className="max-w-4xl mx-auto px-4 sm:px-8 py-4">
-        <div className="flex items-center space-x-2 text-sm text-gray-600">
-          <Link href="/" className="hover:text-black transition-colors">Home</Link>
-          <ChevronRightIcon className="h-4 w-4" />
-          <span className="text-black">Domo</span>
-        </div>
-      </nav>
-
-      <section className="max-w-4xl mx-auto px-4 sm:px-8 pb-8 sm:pb-16 space-y-8 sm:space-y-16">
+      <section className="max-w-4xl mx-auto px-4 sm:px-6 py-12 sm:py-16 space-y-6 sm:space-y-12">
         <div className="space-y-6 text-center">
           <h1 className={`${playfair.className} text-3xl sm:text-5xl md:text-6xl animate-fade-in`}>
             Dominic & Estefania
@@ -142,7 +133,7 @@ export default function WeddingGiftMemento() {
       </section>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-[425px] bg-white">
+        <DialogContent className="sm:max-w-[425px] bg-white rounded-2xl fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-[calc(100%-2rem)] sm:w-full">
           <DialogHeader>
             <DialogTitle className={`${playfair.className} text-xl sm:text-2xl`}>
               {selectedFriend?.name}

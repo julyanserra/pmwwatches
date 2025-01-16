@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Playfair_Display, Cormorant } from 'next/font/google'
 import "./globals.css";
+import Link from "next/link";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,6 +32,16 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
+        <header className="py-4 border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+          <div className="container mx-auto px-4">
+            <nav className="flex items-center justify-between">
+              <Link href="/" className="flex items-center space-x-2">
+                <span className={`${playfair.className} text-xl hover:opacity-80 transition-opacity`}>PMW</span>
+              </Link>
+              
+            </nav>
+          </div>
+        </header>
         <main className="flex-1">
           {children}
         </main>
