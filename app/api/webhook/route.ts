@@ -8,26 +8,18 @@ async function uploadMediaToSupabase(
     mediaType: 'image' | 'video' = 'image'
 ) {
     try {
-        // Create bucket if it doesn't exist
-        const { error: bucketError } = await supabase.storage.createBucket('pmwweddings', {
-            public: true,
-            fileSizeLimit: 52428800, // 50MB
-        });
-        
-        if (bucketError && bucketError.message !== 'Bucket already exists') {
-            console.error('Bucket creation error:', bucketError);
-            throw bucketError;
-        }
-
         // Determine file extension based on media type
         const extension = mediaType === 'video' ? '.mp4' : '.jpg';
-        const fileName = `domo/${prefix}${messageId || Date.now()}-${Date.now()}${extension}`;
+        const timestamp = Date.now();
+        const safeMessageId = messageId ? messageId.replace(/[^a-zA-Z0-9]/g, '') : timestamp;
+        const fileName = `domo/${prefix}${safeMessageId}-${timestamp}${extension}`;
         
         console.log('Attempting to upload file:', {
             fileName,
             mediaType,
             blobSize: mediaBlob.size,
-            blobType: mediaBlob.type
+            blobType: mediaBlob.type,
+            path: `domo/${prefix}${safeMessageId}-${timestamp}${extension}`
         });
 
         // Upload to Supabase Storage
@@ -65,7 +57,6 @@ async function uploadMediaToSupabase(
             error,
             errorMessage: error instanceof Error ? error.message : 'Unknown error',
             errorName: error instanceof Error ? error.name : 'Unknown',
-            fileName: `domo/${prefix}${messageId || Date.now()}-${Date.now()}${mediaType === 'video' ? '.mp4' : '.jpg'}`,
             mediaType,
             blobInfo: {
                 size: mediaBlob.size,
