@@ -51,7 +51,7 @@ export default function Home() {
       <section className="max-w-4xl w-full space-y-6 sm:space-y-10 mb-16">
         <div className="text-center space-y-2">
           <h1 className={`${playfair.className} text-4xl font-bold text-center mb-2`}>
-            PMW Watches
+            PMW Weddings
           </h1>
           <p className={`${cormorant.className} text-xl text-center mb-8`}>
             Celebrating Special Moments

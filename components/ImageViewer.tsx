@@ -125,21 +125,23 @@ export function ImageViewer({
       onTouchEnd={handleTouchEnd}
       onClick={onClose}
     >
-      <div className="absolute top-4 right-4 flex gap-4">
+      <div className="absolute top-4 right-4 flex gap-2">
         <button
           onClick={(e) => {
             e.stopPropagation();
             handleDownload();
           }}
           className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
+          aria-label="Download media"
         >
-          <Download className="w-6 h-6 text-white" />
+          <Download className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
         </button>
         <button
           onClick={onClose}
           className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
+          aria-label="Close viewer"
         >
-          <X className="w-6 h-6 text-white" />
+          <X className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
         </button>
       </div>
 
@@ -148,10 +150,11 @@ export function ImageViewer({
           e.stopPropagation();
           handlePrevious();
         }}
-        className="absolute left-4 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
+        className="absolute left-2 sm:left-4 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
         style={{ display: currentIndex === 0 ? 'none' : 'block' }}
+        aria-label="Previous image"
       >
-        <ChevronLeft className="w-6 h-6 text-white" />
+        <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
       </button>
 
       <button
@@ -159,34 +162,36 @@ export function ImageViewer({
           e.stopPropagation();
           handleNext();
         }}
-        className="absolute right-4 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
+        className="absolute right-2 sm:right-4 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
         style={{ display: currentIndex === items.length - 1 ? 'none' : 'block' }}
+        aria-label="Next image"
       >
-        <ChevronRight className="w-6 h-6 text-white" />
+        <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
       </button>
 
       <div 
         onClick={(e) => e.stopPropagation()} 
-        className="relative max-w-[90vw] max-h-[90vh]"
+        className="relative w-full h-full sm:w-auto sm:h-auto sm:max-w-[90vw] sm:max-h-[90vh]"
         style={{ transform: `scale(${scale})` }}
       >
         {currentItem.mediaType === 'video' ? (
-          <div className="relative">
+          <div className="relative w-full h-full flex items-center justify-center">
             <video
               ref={videoRef}
               src={currentItem.publicUrl}
               controls={false}
-              className="max-w-[90vw] max-h-[90vh] object-contain"
+              className="max-w-full max-h-full object-contain"
               onClick={() => setIsPlaying(!isPlaying)}
             />
             <button
               onClick={() => setIsPlaying(!isPlaying)}
-              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-4 bg-black/50 rounded-full hover:bg-black/70 transition-colors"
+              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-3 sm:p-4 bg-black/50 rounded-full hover:bg-black/70 transition-colors"
+              aria-label={isPlaying ? "Pause video" : "Play video"}
             >
               {isPlaying ? (
-                <Pause className="w-8 h-8 text-white" />
+                <Pause className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
               ) : (
-                <Play className="w-8 h-8 text-white" fill="white" />
+                <Play className="w-6 h-6 sm:w-8 sm:h-8 text-white" fill="white" />
               )}
             </button>
           </div>
@@ -194,7 +199,7 @@ export function ImageViewer({
           <img
             src={currentItem.publicUrl}
             alt={currentItem.name}
-            className="max-w-[90vw] max-h-[90vh] object-contain"
+            className="max-w-full max-h-full object-contain"
             style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
           />
         )}
