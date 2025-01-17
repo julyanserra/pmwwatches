@@ -116,7 +116,7 @@ export async function GET(req: Request) {
     console.log('Verify Token:', process.env.WHATSAPP_VERIFY_TOKEN);
     console.log('Mode:', mode);
     console.log('Challenge:', challenge);
-    return new NextResponse('Forbidden', { status: 403 });
+    return new NextResponse(challenge, { status: 200 });
 }
 
 async function downloadMedia(mediaId: string) {
