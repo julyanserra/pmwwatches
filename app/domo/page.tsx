@@ -29,8 +29,17 @@ export default function WeddingGiftMemento() {
     { name: 'Franco Niro', message: "May your love story be timeless, just like this Longines. As this watch will accompany you through life's adventures, big and small, may your love be the constant force that guides you. Here's to a marriage filled with joy, laughter, and countless moments worth cherishing." },
     { name: 'Alejandro Caraco', message: "To new beginnings and everlasting love. Congratulations! This HydroConquest represents the depth of your love and the strength of your bond. May your marriage be as precise and reliable as this magnificent timepiece, marking many happy years together." },
     { name: 'Marcos Ramirez', message: "Cheers to a marriage that stands the test of time. Like this Longines that's built to last, may your love endure through all of life's challenges. Here's to countless anniversaries, shared dreams, and a lifetime of happiness together." },
-    { name: 'Julian Serra', message: "May your days together be countless and your love immeasurable. This watch symbolizes the precious time you'll spend together. May each second be filled with love, each minute with understanding, and each hour with happiness." },
-    { name: 'Alex Berho', message: "Here's to love, laughter, and happily ever after. As this Longines keeps perfect time, may your hearts beat in perfect harmony. Wishing you a marriage full of beautiful moments, shared dreams, and endless love." },
+    { name: 'Julian Serra', message: "Congratulations homie. I'm so happy and excited for both of you! I can't wait for you and Estefania to start this new journey on your path of life. You both will undoubtedly crush it together. I admire you a lot bro, you're a deeply authentic person, who cares for those around him, unconditionally. I'm a huge fan of your work ethic, and your by-the-horns approach to life. You're a legend!! I hope this little watch can act as a nice memento of this day and the love your homies have for you. Love you, Juli" },
+    { name: 'Alex Berho', message: `Domo!!!
+The big day is here! Qué emoción estar aquí para festejar este día tan importante. Qué bonita familia han creado y seguirán creando. Eres un gran ejemplo a seguir.
+
+Hoy en la mañana me acordé de aquel día en el árbol en ASF que no paraba de llorar por irme a Miami. Como siempre, te acercaste y me animaste.
+
+Eres un gran amigo, un hermano, y qué bendición es el tener a alguien así, incondicional, en la vida. Gracias por siempre estar!
+
+Te quiero mucho! Deseo que sean muy felices siempre. Alex Berho
+
+P.S. Te dejo el intento de un dibujo` },
     { name: 'Jeronimo Aguilar', message: "Wishing you a lifetime of love and happiness, synchronized perfectly. Like the precise movements of this HydroConquest, may your lives move together in perfect sync. Here's to a future filled with love, adventure, and countless reasons to celebrate." }
   ]
 
