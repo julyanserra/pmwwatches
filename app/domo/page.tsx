@@ -39,7 +39,8 @@ Eres un gran amigo, un hermano, y qué bendición es el tener a alguien así, in
 Te quiero mucho! Deseo que sean muy felices siempre. Alex Berho
 
 P.S. Te dejo el intento de un dibujo` },
-    { name: 'Jeronimo Aguilar', message: "Wishing you a lifetime of love and happiness, synchronized perfectly. Like the precise movements of this HydroConquest, may your lives move together in perfect sync. Here's to a future filled with love, adventure, and countless reasons to celebrate." }
+    { name: 'Jeronimo Aguilar', message: `Dominic, 
+I know we far away but always in my heart, my fellow WR. So excited to see you succeed in this new stage of life. Les deseo todo lo mejor a Bumblina y a ti. Stay close, stay happy. Happiest of days from here on!! I love you, man!` }
   ]
 
   return (

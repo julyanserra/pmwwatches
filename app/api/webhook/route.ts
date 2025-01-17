@@ -12,14 +12,14 @@ async function uploadMediaToSupabase(
         const extension = mediaType === 'video' ? '.mp4' : '.jpg';
         const timestamp = Date.now();
         const safeMessageId = messageId ? messageId.replace(/[^a-zA-Z0-9]/g, '') : timestamp;
-        const fileName = `domo/${prefix}${safeMessageId}-${timestamp}${extension}`;
+        const fileName = `${prefix}${safeMessageId}-${timestamp}${extension}`;
         
         console.log('Attempting to upload file:', {
             fileName,
             mediaType,
             blobSize: mediaBlob.size,
             blobType: mediaBlob.type,
-            path: `domo/${prefix}${safeMessageId}-${timestamp}${extension}`
+            path: `${prefix}${safeMessageId}-${timestamp}${extension}`
         });
 
         // Upload to Supabase Storage
@@ -263,10 +263,29 @@ export async function POST(req: Request) {
             message.type as 'image' | 'video'
         );
 
+        // Save to media_pmw table
+        const { data, error: dbError } = await supabase
+            .from('media_pmw')
+            .insert([
+                {
+                    message_id: message.id,
+                    storage_path: fileName,
+                    public_url: publicUrl,
+                    media_type: message.type,
+                    timestamp: new Date().toISOString(),
+                }
+            ]);
+
+        if (dbError) {
+            console.error('Failed to save to media_pmw table:', dbError);
+            throw dbError;
+        }
+
         console.log('Successfully processed and stored media:', {
             messageId: message.id,
             fileName,
-            publicUrl
+            publicUrl,
+            dbRecord: data
         });
 
         return new NextResponse('OK', { status: 200 });

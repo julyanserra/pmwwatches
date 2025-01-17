@@ -33,17 +33,17 @@ export default function PhotosPage() {
         </BreadcrumbList>
       </Breadcrumb>
       
-      <div className="flex justify-between items-center my-8">
-        <h1 className={`${playfair.className} text-4xl font-bold`}>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 my-8">
+        <h1 className={`${playfair.className} text-3xl sm:text-4xl font-bold`}>
           Celebration Photos
         </h1>
         <Button 
           variant="outline" 
           onClick={scrollToInstructions}
-          className="gap-2"
+          className="gap-2 w-full sm:w-auto"
         >
           <HelpCircle className="h-4 w-4" />
-          How to Add Photos
+          <span className="sm:inline">How to Add Photos</span>
         </Button>
       </div>
 
@@ -51,20 +51,22 @@ export default function PhotosPage() {
 
       <Card className="mx-auto max-w-2xl mt-16" id="how-to-use">
         <CardHeader>
-          <CardTitle className={`${playfair.className} text-2xl`}>How to Add Photos</CardTitle>
-          <CardDescription className="flex items-center gap-2">
-            Send your photos to WhatsApp number:{' '}
-            <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm">
-              {whatsappNumber.replace(/(\+\d{1})(\d{3})(\d{3})(\d{4})/, '$1($2)$3-$4')}
-            </code>
-            <a
-              href={`https://wa.me/${whatsappNumber.replace('+', '')}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center rounded-md bg-green-600 p-2 text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 h-10 w-10"
-            >
-              <RiWhatsappLine className="h-6 w-6" />
-            </a>
+          <CardTitle className={`${playfair.className} text-xl sm:text-2xl`}>How to Add Photos</CardTitle>
+          <CardDescription className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+            <span>Send your photos to WhatsApp number:</span>
+            <div className="flex items-center gap-2">
+              <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm">
+                {whatsappNumber.replace(/(\+\d{1})(\d{3})(\d{3})(\d{4})/, '$1($2)$3-$4')}
+              </code>
+              <a
+                href={`https://wa.me/${whatsappNumber.replace('+', '')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center rounded-md bg-green-600 p-2 text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 h-10 w-10"
+              >
+                <RiWhatsappLine className="h-6 w-6" />
+              </a>
+            </div>
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">

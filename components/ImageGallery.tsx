@@ -10,6 +10,7 @@ type MediaItem = {
   publicUrl: string;
   mediaType: 'image' | 'video';
   created_at: string;
+  message_id: string;
 };
 
 function VideoThumbnail({ src, className }: { src: string; className?: string }) {
@@ -69,18 +70,18 @@ export function ImageGallery() {
     // Initial fetch
     fetchMedia();
 
-    // Set up real-time subscription for storage changes
+    // Set up real-time subscription for database changes
     const channel = supabase
-      .channel('storage_changes')
+      .channel('media_changes')
       .on(
         'postgres_changes',
         {
           event: '*',
-          schema: 'storage',
-          table: 'objects',
+          schema: 'public',
+          table: 'media_pmw',
         },
         () => {
-          fetchMedia(); // Refetch when storage changes
+          fetchMedia(); // Refetch when media_pmw table changes
         }
       )
       .subscribe();
@@ -92,53 +93,35 @@ export function ImageGallery() {
 
   const fetchMedia = async () => {
     try {
-      // Create the bucket if it doesn't exist
-      const { error: bucketError } = await supabase.storage.createBucket('pmwweddings', {
-        public: true,
-        fileSizeLimit: 52428800, // 50MB
-      });
-      
-      if (bucketError && bucketError.message !== 'Bucket already exists') {
-        throw bucketError;
-      }
+      // Fetch from media_pmwtable
+      const { data: mediaUrls, error } = await supabase
+        .from('media_pmw')
+        .select('*')
+        .order('timestamp', sortOrder === 'newest' ? { ascending: false } : { ascending: true });
 
-      // List all files in the domo folder
-      const { data: files, error } = await supabase.storage
-        .from('pmwweddings')
-        .list('domo', {
-          sortBy: { column: 'created_at', order: 'desc' },
-        });
+      console.log('Media URLs from database:', mediaUrls);
 
       if (error) throw error;
 
-      // Transform the files into MediaItems
-      const items: MediaItem[] = await Promise.all(
-        (files || []).map(async (file) => {
-          const { data: { publicUrl } } = supabase.storage
-            .from('pmwweddings')
-            .getPublicUrl(`domo/${file.name}`);
+      // Transform the database records into MediaItems
+      const items: MediaItem[] = (mediaUrls || []).map((record) => ({
+        name: record.storage_path,
+        publicUrl: record.public_url,
+        mediaType: record.media_type,
+        created_at: record.timestamp,
+        message_id: record.message_id,
+      }));
 
-          return {
-            name: file.name,
-            publicUrl,
-            mediaType: file.metadata?.mimetype?.startsWith('video/') ? 'video' : 'image',
-            created_at: file.created_at,
-          };
-        })
-      );
-
+      console.log('Transformed media items:', items);
       setMediaItems(items);
     } catch (error) {
-      console.error('Error fetching media:', error);
+      console.error('Detailed error fetching media:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const sortedMediaItems = [...mediaItems].sort((a, b) => {
-    const comparison = new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-    return sortOrder === 'newest' ? comparison : -comparison;
-  });
+  const sortedMediaItems = mediaItems; // No need to sort here as we're sorting in the query
 
   if (loading) {
     return (
