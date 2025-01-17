@@ -50,12 +50,21 @@ export default function Home() {
     <main className="min-h-screen bg-white text-black flex flex-col items-center p-4 sm:p-8">
       <section className="max-w-4xl w-full space-y-6 sm:space-y-10 mb-16">
         <div className="text-center space-y-2">
-          <h1 className={`${playfair.className} text-4xl sm:text-6xl md:text-7xl animate-fade-in`}>
-            PMW
+          <h1 className={`${playfair.className} text-4xl font-bold text-center mb-2`}>
+            PMW Watches
           </h1>
-          <p className={`${cormorant.className} text-xl sm:text-2xl md:text-3xl tracking-wide uppercase`}>
-            Weddings
+          <p className={`${cormorant.className} text-xl text-center mb-8`}>
+            Celebrating Special Moments
           </p>
+
+          <div className="flex justify-center mb-8">
+            <Button variant="outline" asChild className="mr-4">
+              <Link href="/photos">
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                View Celebration Photos
+              </Link>
+            </Button>
+          </div>
         </div>
         
         <Separator className="max-w-xs mx-auto" />

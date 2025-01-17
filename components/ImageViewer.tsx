@@ -4,9 +4,10 @@ import { ChevronLeft, ChevronRight, X, Download, Play, Pause } from "lucide-reac
 import { useEffect, useRef, TouchEvent, useState } from "react";
 
 interface MediaItem {
-  id: number;
-  public_url: string;
-  media_type: 'image' | 'video';
+  name: string;
+  publicUrl: string;
+  mediaType: 'image' | 'video';
+  created_at: string;
 }
 
 interface ImageViewerProps {
@@ -28,39 +29,50 @@ export function ImageViewer({
   const [scale, setScale] = useState(1);
   const [isDragging, setIsDragging] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const isButtonInteraction = useRef(false);
-  
-  const handleTouchStart = (e: TouchEvent) => {
-    const target = e.target as HTMLElement;
-    if (target.closest('button')) {
-      isButtonInteraction.current = true;
-      return;
-    }
-    
-    isButtonInteraction.current = false;
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+      if (e.key === 'ArrowLeft') handlePrevious();
+      if (e.key === 'ArrowRight') handleNext();
+    };
+
+    const handleWheel = (e: WheelEvent) => {
+      if (e.ctrlKey) {
+        e.preventDefault();
+        const delta = e.deltaY * -0.01;
+        const newScale = Math.min(Math.max(scale + delta, 1), 3);
+        setScale(newScale);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('wheel', handleWheel, { passive: false });
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('wheel', handleWheel);
+    };
+  }, [onClose, scale]);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
+    touchEndX.current = e.touches[0].clientX;
   };
 
-  const handleTouchMove = (e: TouchEvent) => {
-    if (isButtonInteraction.current) return;
+  const handleTouchMove = (e: React.TouchEvent) => {
     touchEndX.current = e.touches[0].clientX;
   };
 
   const handleTouchEnd = () => {
-    if (isButtonInteraction.current) {
-      isButtonInteraction.current = false;
-      return;
-    }
+    const diff = touchStartX.current - touchEndX.current;
+    const threshold = 50;
 
-    const difference = touchStartX.current - touchEndX.current;
-    const minSwipeDistance = 50;
-
-    if (Math.abs(difference) > minSwipeDistance) {
-      if (difference > 0) {
-        // Swiped left
+    if (Math.abs(diff) > threshold) {
+      if (diff > 0 && currentIndex < items.length - 1) {
         handleNext();
-      } else {
-        // Swiped right
+      } else if (diff < 0 && currentIndex > 0) {
         handlePrevious();
       }
     }
@@ -78,168 +90,114 @@ export function ImageViewer({
     }
   };
 
-  const handleWheel = (e: WheelEvent) => {
-    if (e.ctrlKey) {
-      e.preventDefault();
-      const newScale = scale + (e.deltaY > 0 ? -0.1 : 0.1);
-      setScale(Math.min(Math.max(0.5, newScale), 3));
-    }
-  };
-
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-      if (e.key === 'ArrowLeft') handlePrevious();
-      if (e.key === 'ArrowRight') handleNext();
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-    document.body.style.overflow = 'hidden';
-    document.addEventListener('wheel', handleWheel, { passive: false });
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = 'auto';
-      document.removeEventListener('wheel', handleWheel);
-    };
-  }, [currentIndex, scale]);
-
-  useEffect(() => {
-    if (isPlaying) {
-      const interval = setInterval(() => {
-        if (currentIndex < items.length - 1) {
-          onNavigate(currentIndex + 1);
-        } else {
-          setIsPlaying(false);
-        }
-      }, 3000);
-      return () => clearInterval(interval);
+    if (videoRef.current) {
+      if (isPlaying) {
+        videoRef.current.play();
+      } else {
+        videoRef.current.pause();
+      }
     }
-  }, [isPlaying, currentIndex, items.length]);
+  }, [isPlaying]);
 
   const handleDownload = async () => {
     try {
-      // First try the native browser download
-      const link = document.createElement('a');
-      link.href = currentItem.public_url;
-      link.download = `media-${currentItem.id}${currentItem.media_type === 'video' ? '.mp4' : '.jpg'}`;
-      
-      // For iOS Safari and some mobile browsers
-      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        // Fetch the image/video first
-        const response = await fetch(currentItem.public_url);
-        const blob = await response.blob();
-        
-        // Try to use the native sharing if available
-        if (navigator.share) {
-          await navigator.share({
-            files: [
-              new File(
-                [blob], 
-                `media-${currentItem.id}${currentItem.media_type === 'video' ? '.mp4' : '.jpg'}`,
-                { type: blob.type }
-              )
-            ]
-          });
-          return;
-        }
-        
-        // Fallback: Open in new tab
-        window.open(currentItem.public_url, '_blank');
-      } else {
-        // Desktop browsers
-        link.click();
-      }
+      const response = await fetch(currentItem.publicUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = currentItem.name;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
     } catch (error) {
-      console.error('Error downloading media:', error);
-      // Fallback: Open in new tab
-      window.open(currentItem.public_url, '_blank');
+      console.error('Error downloading file:', error);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black">
-      <div 
-        className="relative flex items-center justify-center w-full h-full"
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
+    <div 
+      className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onClick={onClose}
+    >
+      <div className="absolute top-4 right-4 flex gap-4">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            handleDownload();
+          }}
+          className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
+        >
+          <Download className="w-6 h-6 text-white" />
+        </button>
+        <button
+          onClick={onClose}
+          className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
+        >
+          <X className="w-6 h-6 text-white" />
+        </button>
+      </div>
+
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          handlePrevious();
+        }}
+        className="absolute left-4 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
+        style={{ display: currentIndex === 0 ? 'none' : 'block' }}
       >
-        {/* Close button */}
-        <div className="absolute top-4 right-4 z-50 flex gap-2">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleDownload();
-            }}
-            className="p-1.5 sm:p-2 text-white hover:bg-white/20 rounded-full transition-colors"
-          >
-            <Download className="h-6 w-6 sm:h-8 sm:w-8" />
-          </button>
-          <button
-            onClick={onClose}
-            className="p-1.5 sm:p-2 text-white hover:bg-white/20 rounded-full transition-colors"
-          >
-            <X className="h-6 w-6 sm:h-8 sm:w-8" />
-          </button>
-        </div>
+        <ChevronLeft className="w-6 h-6 text-white" />
+      </button>
 
-        {/* Navigation buttons */}
-        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between items-center px-2 sm:px-4">
-          {currentIndex > 0 && (
-            <button
-              onClick={handlePrevious}
-              className="p-1.5 sm:p-2 text-white hover:bg-white/20 rounded-full transition-colors bg-black/20 backdrop-blur-sm"
-            >
-              <ChevronLeft className="h-8 w-8 sm:h-10 sm:w-10" />
-            </button>
-          )}
-          
-          {currentIndex < items.length - 1 && (
-            <button
-              onClick={handleNext}
-              className="p-1.5 sm:p-2 text-white hover:bg-white/20 rounded-full transition-colors ml-auto bg-black/20 backdrop-blur-sm"
-            >
-              <ChevronRight className="h-8 w-8 sm:h-10 sm:w-10" />
-            </button>
-          )}
-        </div>
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          handleNext();
+        }}
+        className="absolute right-4 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
+        style={{ display: currentIndex === items.length - 1 ? 'none' : 'block' }}
+      >
+        <ChevronRight className="w-6 h-6 text-white" />
+      </button>
 
-        {/* Media content */}
-        <div className="w-full h-full flex items-center justify-center p-4">
-          {currentItem.media_type === 'video' ? (
+      <div 
+        onClick={(e) => e.stopPropagation()} 
+        className="relative max-w-[90vw] max-h-[90vh]"
+        style={{ transform: `scale(${scale})` }}
+      >
+        {currentItem.mediaType === 'video' ? (
+          <div className="relative">
             <video
-              src={currentItem.public_url}
-              controls
-              className="max-h-full max-w-full"
-              autoPlay
+              ref={videoRef}
+              src={currentItem.publicUrl}
+              controls={false}
+              className="max-w-[90vw] max-h-[90vh] object-contain"
+              onClick={() => setIsPlaying(!isPlaying)}
             />
-          ) : (
-            <img
-              src={currentItem.public_url}
-              alt={`Media item ${currentItem.id}`}
-              className="max-h-full max-w-full object-contain select-none transition-transform"
-              style={{ transform: `scale(${scale})` }}
-              onDoubleClick={() => setScale(scale === 1 ? 2 : 1)}
-            />
-          )}
-        </div>
-
-        {/* Counter */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 sm:gap-4">
-          <button
-            onClick={() => setIsPlaying(!isPlaying)}
-            className="text-white bg-black/50 p-1.5 sm:p-2 rounded-full hover:bg-black/70"
-          >
-            {isPlaying ? 
-              <Pause className="h-4 w-4 sm:h-5 sm:w-5" /> : 
-              <Play className="h-4 w-4 sm:h-5 sm:w-5" />
-            }
-          </button>
-          <div className="text-white bg-black/50 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-sm sm:text-base">
-            {currentIndex + 1} / {items.length}
+            <button
+              onClick={() => setIsPlaying(!isPlaying)}
+              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-4 bg-black/50 rounded-full hover:bg-black/70 transition-colors"
+            >
+              {isPlaying ? (
+                <Pause className="w-8 h-8 text-white" />
+              ) : (
+                <Play className="w-8 h-8 text-white" fill="white" />
+              )}
+            </button>
           </div>
-        </div>
+        ) : (
+          <img
+            src={currentItem.publicUrl}
+            alt={currentItem.name}
+            className="max-w-[90vw] max-h-[90vh] object-contain"
+            style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+          />
+        )}
       </div>
     </div>
   );

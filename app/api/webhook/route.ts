@@ -7,14 +7,24 @@ async function uploadMediaToSupabase(
     messageId?: string,
     mediaType: 'image' | 'video' = 'image'
 ) {
+    // Create bucket if it doesn't exist
+    const { error: bucketError } = await supabase.storage.createBucket('pmwweddings', {
+        public: true,
+        fileSizeLimit: 52428800, // 50MB
+    });
+    
+    if (bucketError && bucketError.message !== 'Bucket already exists') {
+        throw bucketError;
+    }
+
     // Determine file extension based on media type
     const extension = mediaType === 'video' ? '.mp4' : '.jpg';
-    const fileName = `${prefix}${messageId || Date.now()}-${Date.now()}${extension}`;
+    const fileName = `domo/${prefix}${messageId || Date.now()}-${Date.now()}${extension}`;
     
     // Upload to Supabase Storage
     const { data: uploadData, error: uploadError } = await supabase
         .storage
-        .from('whatsapp-images')
+        .from('pmwweddings')
         .upload(fileName, mediaBlob, {
             contentType: mediaType === 'video' ? 'video/mp4' : 'image/jpeg',
             upsert: false
@@ -26,7 +36,7 @@ async function uploadMediaToSupabase(
 
     const { data: { publicUrl } } = supabase
         .storage
-        .from('whatsapp-images')
+        .from('pmwweddings')
         .getPublicUrl(fileName);
 
     return {
@@ -228,25 +238,12 @@ export async function POST(req: Request) {
             message.type as 'image' | 'video'
         );
 
-        // Store metadata in database
-        const { data, error } = await supabase
-            .from('media')
-            .insert([
-                {
-                    message_id: message.id,
-                    storage_path: fileName,
-                    public_url: publicUrl,
-                    media_type: message.type,
-                    timestamp: new Date().toISOString(),
-                }
-            ]);
+        console.log('Successfully processed and stored media:', {
+            messageId: message.id,
+            fileName,
+            publicUrl
+        });
 
-        if (error) {
-            console.error('Error storing media metadata:', error);
-            return new NextResponse('Error storing media metadata', { status: 500 });
-        }
-
-        console.log('Successfully processed and stored media:', message.id);
         return new NextResponse('OK', { status: 200 });
     } catch (error) {
         console.error('Error processing webhook:', error);

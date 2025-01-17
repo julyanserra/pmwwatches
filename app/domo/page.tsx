@@ -9,7 +9,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 const playfair = Playfair_Display({ subsets: ['latin'] })
 const cormorant = Cormorant({ subsets: ['latin'], weight: ['300', '400', '600'] })
 
@@ -64,6 +63,12 @@ P.S. Te dejo el intento de un dibujo` },
             objectFit="cover"
             className="rounded-sm shadow-2xl animate-fade-in transition-transform hover:scale-105 duration-300"
           />
+        </div>
+
+        <div className="flex justify-center">
+          <Button variant="outline" asChild>
+            <Link href="/photos">View Celebration Photos</Link>
+          </Button>
         </div>
 
         <div className="space-y-6">

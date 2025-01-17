@@ -6,11 +6,10 @@ import { Loader2, Play } from 'lucide-react';
 import { ImageViewer } from './ImageViewer';
 
 type MediaItem = {
-  id: number;
-  public_url: string;
-  media_type: 'image' | 'video';
-  timestamp: string;
-  message_id: string;
+  name: string;
+  publicUrl: string;
+  mediaType: 'image' | 'video';
+  created_at: string;
 };
 
 function VideoThumbnail({ src, className }: { src: string; className?: string }) {
@@ -70,18 +69,18 @@ export function ImageGallery() {
     // Initial fetch
     fetchMedia();
 
-    // Set up real-time subscription
+    // Set up real-time subscription for storage changes
     const channel = supabase
-      .channel('media_changes')
+      .channel('storage_changes')
       .on(
         'postgres_changes',
         {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'media',
+          event: '*',
+          schema: 'storage',
+          table: 'objects',
         },
-        (payload) => {
-          setMediaItems((current) => [payload.new as MediaItem, ...current]);
+        () => {
+          fetchMedia(); // Refetch when storage changes
         }
       )
       .subscribe();
@@ -93,13 +92,42 @@ export function ImageGallery() {
 
   const fetchMedia = async () => {
     try {
-      const { data, error } = await supabase
-        .from('media')
-        .select('*')
-        .order('timestamp', { ascending: false });
+      // Create the bucket if it doesn't exist
+      const { error: bucketError } = await supabase.storage.createBucket('pmwweddings', {
+        public: true,
+        fileSizeLimit: 52428800, // 50MB
+      });
+      
+      if (bucketError && bucketError.message !== 'Bucket already exists') {
+        throw bucketError;
+      }
+
+      // List all files in the domo folder
+      const { data: files, error } = await supabase.storage
+        .from('pmwweddings')
+        .list('domo', {
+          sortBy: { column: 'created_at', order: 'desc' },
+        });
 
       if (error) throw error;
-      setMediaItems(data || []);
+
+      // Transform the files into MediaItems
+      const items: MediaItem[] = await Promise.all(
+        (files || []).map(async (file) => {
+          const { data: { publicUrl } } = supabase.storage
+            .from('pmwweddings')
+            .getPublicUrl(`domo/${file.name}`);
+
+          return {
+            name: file.name,
+            publicUrl,
+            mediaType: file.metadata?.mimetype?.startsWith('video/') ? 'video' : 'image',
+            created_at: file.created_at,
+          };
+        })
+      );
+
+      setMediaItems(items);
     } catch (error) {
       console.error('Error fetching media:', error);
     } finally {
@@ -108,7 +136,7 @@ export function ImageGallery() {
   };
 
   const sortedMediaItems = [...mediaItems].sort((a, b) => {
-    const comparison = new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
+    const comparison = new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
     return sortOrder === 'newest' ? comparison : -comparison;
   });
 
@@ -150,32 +178,32 @@ export function ImageGallery() {
       <div className={`grid ${gridSizeClasses[gridSize]} gap-4`}>
         {sortedMediaItems.map((item, index) => (
           <div 
-            key={item.id} 
+            key={item.name} 
             className="relative aspect-square rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
             onClick={() => setSelectedIndex(index)}
           >
-            {item.media_type === 'video' ? (
+            {item.mediaType === 'video' ? (
               <VideoThumbnail
-                src={item.public_url}
+                src={item.publicUrl}
                 className="w-full h-full"
               />
             ) : (
               <img
-                src={item.public_url}
-                alt={`Uploaded at ${item.timestamp}`}
+                src={item.publicUrl}
+                alt={`Uploaded at ${item.created_at}`}
                 className="object-cover w-full h-full"
                 loading="lazy"
               />
             )}
             <div className="absolute bottom-0 left-0 right-0 bg-black/10 text-white/50 text-[10px] p-1.5 backdrop-blur-[1px]">
-              {new Date(item.timestamp).toLocaleString()}
+              {new Date(item.created_at).toLocaleString()}
             </div>
           </div>
         ))}
         
         {mediaItems.length === 0 && (
           <div className="col-span-full text-center py-12 text-muted-foreground">
-            No images or videos received yet. Send media via WhatsApp to see it here!
+            No images or videos uploaded yet. Upload media to see it here!
           </div>
         )}
       </div>
