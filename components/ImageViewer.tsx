@@ -119,38 +119,37 @@ export function ImageViewer({
 
   return (
     <div 
-      className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center"
+      className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center touch-none"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       onClick={onClose}
     >
-      <div className="absolute top-4 right-4 flex gap-2">
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            handleDownload();
-          }}
-          className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
-          aria-label="Download media"
-        >
-          <Download className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-        </button>
-        <button
-          onClick={onClose}
-          className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
-          aria-label="Close viewer"
-        >
-          <X className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-        </button>
-      </div>
+      <button
+        onClick={onClose}
+        className="absolute top-4 left-4 z-50 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
+        aria-label="Close viewer"
+      >
+        <X className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+      </button>
+
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          handleDownload();
+        }}
+        className="absolute top-4 right-4 z-50 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
+        aria-label="Download media"
+      >
+        <Download className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+      </button>
 
       <button
         onClick={(e) => {
           e.stopPropagation();
           handlePrevious();
         }}
-        className="absolute left-2 sm:left-4 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
+        className="absolute left-2 sm:left-4 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors z-50"
         style={{ display: currentIndex === 0 ? 'none' : 'block' }}
         aria-label="Previous image"
       >
@@ -162,7 +161,7 @@ export function ImageViewer({
           e.stopPropagation();
           handleNext();
         }}
-        className="absolute right-2 sm:right-4 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
+        className="absolute right-2 sm:right-4 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors z-50"
         style={{ display: currentIndex === items.length - 1 ? 'none' : 'block' }}
         aria-label="Next image"
       >
@@ -171,38 +170,50 @@ export function ImageViewer({
 
       <div 
         onClick={(e) => e.stopPropagation()} 
-        className="relative w-full h-full sm:w-auto sm:h-auto sm:max-w-[90vw] sm:max-h-[90vh]"
-        style={{ transform: `scale(${scale})` }}
+        className="w-full h-full flex items-center justify-center px-4"
       >
-        {currentItem.mediaType === 'video' ? (
-          <div className="relative w-full h-full flex items-center justify-center">
-            <video
-              ref={videoRef}
+        <div
+          className="relative max-w-full max-h-full"
+          style={{ transform: `scale(${scale})` }}
+        >
+          {currentItem.mediaType === 'video' ? (
+            <div className="relative w-full h-full flex items-center justify-center">
+              <video
+                ref={videoRef}
+                src={currentItem.publicUrl}
+                controls={false}
+                className="max-w-full max-h-[85vh] object-contain"
+                playsInline
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsPlaying(!isPlaying);
+                }}
+              />
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsPlaying(!isPlaying);
+                }}
+                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-3 sm:p-4 bg-black/50 rounded-full hover:bg-black/70 transition-colors"
+                aria-label={isPlaying ? "Pause video" : "Play video"}
+              >
+                {isPlaying ? (
+                  <Pause className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+                ) : (
+                  <Play className="w-6 h-6 sm:w-8 sm:h-8 text-white" fill="white" />
+                )}
+              </button>
+            </div>
+          ) : (
+            <img
               src={currentItem.publicUrl}
-              controls={false}
-              className="max-w-full max-h-full object-contain"
-              onClick={() => setIsPlaying(!isPlaying)}
+              alt={currentItem.name}
+              className="max-w-full max-h-[85vh] object-contain"
+              style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+              onClick={(e) => e.stopPropagation()}
             />
-            <button
-              onClick={() => setIsPlaying(!isPlaying)}
-              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-3 sm:p-4 bg-black/50 rounded-full hover:bg-black/70 transition-colors"
-              aria-label={isPlaying ? "Pause video" : "Play video"}
-            >
-              {isPlaying ? (
-                <Pause className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
-              ) : (
-                <Play className="w-6 h-6 sm:w-8 sm:h-8 text-white" fill="white" />
-              )}
-            </button>
-          </div>
-        ) : (
-          <img
-            src={currentItem.publicUrl}
-            alt={currentItem.name}
-            className="max-w-full max-h-full object-contain"
-            style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
-          />
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
