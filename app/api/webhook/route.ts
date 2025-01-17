@@ -7,43 +7,73 @@ async function uploadMediaToSupabase(
     messageId?: string,
     mediaType: 'image' | 'video' = 'image'
 ) {
-    // Create bucket if it doesn't exist
-    const { error: bucketError } = await supabase.storage.createBucket('pmwweddings', {
-        public: true,
-        fileSizeLimit: 52428800, // 50MB
-    });
-    
-    if (bucketError && bucketError.message !== 'Bucket already exists') {
-        throw bucketError;
-    }
+    try {
+        // Create bucket if it doesn't exist
+        const { error: bucketError } = await supabase.storage.createBucket('pmwweddings', {
+            public: true,
+            fileSizeLimit: 52428800, // 50MB
+        });
+        
+        if (bucketError && bucketError.message !== 'Bucket already exists') {
+            console.error('Bucket creation error:', bucketError);
+            throw bucketError;
+        }
 
-    // Determine file extension based on media type
-    const extension = mediaType === 'video' ? '.mp4' : '.jpg';
-    const fileName = `domo/${prefix}${messageId || Date.now()}-${Date.now()}${extension}`;
-    
-    // Upload to Supabase Storage
-    const { data: uploadData, error: uploadError } = await supabase
-        .storage
-        .from('pmwweddings')
-        .upload(fileName, mediaBlob, {
-            contentType: mediaType === 'video' ? 'video/mp4' : 'image/jpeg',
-            upsert: false
+        // Determine file extension based on media type
+        const extension = mediaType === 'video' ? '.mp4' : '.jpg';
+        const fileName = `domo/${prefix}${messageId || Date.now()}-${Date.now()}${extension}`;
+        
+        console.log('Attempting to upload file:', {
+            fileName,
+            mediaType,
+            blobSize: mediaBlob.size,
+            blobType: mediaBlob.type
         });
 
-    if (uploadError) {
-        throw new Error(`Upload error: ${uploadError.message}`);
+        // Upload to Supabase Storage
+        const { data: uploadData, error: uploadError } = await supabase
+            .storage
+            .from('pmwweddings')
+            .upload(fileName, mediaBlob, {
+                contentType: mediaType === 'video' ? 'video/mp4' : 'image/jpeg',
+                upsert: false
+            });
+
+        if (uploadError) {
+            console.error('Upload error details:', {
+                error: uploadError,
+                message: uploadError.message,
+                name: uploadError.name,
+                fileName,
+                mediaType
+            });
+            throw uploadError;
+        }
+
+        const { data: { publicUrl } } = supabase
+            .storage
+            .from('pmwweddings')
+            .getPublicUrl(fileName);
+
+        return {
+            fileName,
+            publicUrl,
+            uploadData
+        };
+    } catch (error) {
+        console.error('Detailed upload error:', {
+            error,
+            errorMessage: error instanceof Error ? error.message : 'Unknown error',
+            errorName: error instanceof Error ? error.name : 'Unknown',
+            fileName: `domo/${prefix}${messageId || Date.now()}-${Date.now()}${mediaType === 'video' ? '.mp4' : '.jpg'}`,
+            mediaType,
+            blobInfo: {
+                size: mediaBlob.size,
+                type: mediaBlob.type
+            }
+        });
+        throw error;
     }
-
-    const { data: { publicUrl } } = supabase
-        .storage
-        .from('pmwweddings')
-        .getPublicUrl(fileName);
-
-    return {
-        fileName,
-        publicUrl,
-        uploadData
-    };
 }
 
 export async function GET(req: Request) {
