@@ -112,6 +112,10 @@ export async function GET(req: Request) {
     }
 
     console.error('Webhook verification failed');
+    console.log('Token:', token);
+    console.log('Verify Token:', process.env.WHATSAPP_VERIFY_TOKEN);
+    console.log('Mode:', mode);
+    console.log('Challenge:', challenge);
     return new NextResponse('Forbidden', { status: 403 });
 }
 
