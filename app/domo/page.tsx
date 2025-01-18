@@ -22,14 +22,58 @@ export default function WeddingGiftMemento() {
   const [selectedFriend, setSelectedFriend] = useState<Friend | null>(null)
 
   const friends: Friend[] = [
-    { name: 'David Roemer', message: "Dominic, may your marriage be as precise and enduring as this timepiece. Just as a Longines watch marks the passage of time with unwavering accuracy, may your love grow stronger with each passing moment. Your journey together is like the intricate mechanism of a fine watch - complex, beautiful, and designed to last a lifetime." },
-    { name: 'Alejandro Roemer', message: "Here's to a lifetime of adventures together, always in perfect time. Like the HydroConquest that can withstand the depths of the ocean, may your love be resilient and endure all of life's pressures. May each tick of this watch remind you of the precious moments you'll share and the memories you'll create together." },
-    { name: 'Daniel Chavez', message: "Wishing you both a future filled with precious moments. This Longines is more than just a timepiece; it's a symbol of the endless love and commitment you share. May it serve as a constant reminder of this special day and the beautiful journey that lies ahead of you." },
-    { name: 'Franco Niro', message: "May your love story be timeless, just like this Longines. As this watch will accompany you through life's adventures, big and small, may your love be the constant force that guides you. Here's to a marriage filled with joy, laughter, and countless moments worth cherishing." },
-    { name: 'Alejandro Caraco', message: "To new beginnings and everlasting love. Congratulations! This HydroConquest represents the depth of your love and the strength of your bond. May your marriage be as precise and reliable as this magnificent timepiece, marking many happy years together." },
-    { name: 'Marcos Ramirez', message: "Cheers to a marriage that stands the test of time. Like this Longines that's built to last, may your love endure through all of life's challenges. Here's to countless anniversaries, shared dreams, and a lifetime of happiness together." },
-    { name: 'Julian Serra', message: "Congratulations homie. I'm so happy and excited for both of you! I can't wait for you and Estefania to start this new journey on your path of life. You both will undoubtedly crush it together. I admire you a lot bro, you're a deeply authentic person, who cares for those around him, unconditionally. I'm a huge fan of your work ethic, and your by-the-horns approach to life. You're a legend!! I hope this little watch can act as a nice memento of this day and the love your homies have for you. Love you, Juli" },
-    { name: 'Alex Berho', message: `Domo!!!
+    { 
+      name: 'David Roemer', 
+      message: `Domo,
+
+Te admiro y te respeto por todo lo que eres y por lo que has logrado, pero especialmente porque sé que ha sido con un enorme esfuerzo. Hoy, en este día tan especial, te admiro por el camino que has decidido tomar con Estefanía y sé que será un camino lleno de felicidad y amor. 
+
+Love you bro, 
+
+David`
+    },
+    { 
+      name: 'Alejandro Roemer', 
+      message: `Domouuu!
+Tengo tantas memorias de nosotros juntos, cada una de ellas me llena de cariño.
+Ser tu best man es, sin exagerar, el mayor honor de mi vida.
+You will always be my best friend.
+I love you
+-Chiquis
+`
+    },
+    { 
+      name: 'Daniel Chavez', 
+      message: `My man Domo! I'm incredibly happy for you as you step into this new adventure! Thrilled de compartir tantos momentos increíbles desde aquel verano de camp de niños (te acuerdas? Haha) hasta hoy el día de tu boda, who would have imagined? Eres una persona que admiro mucho porque todo lo que te has propuesto lo has logrado y me ha tocado vivirlo. Me da mucho gusto que you've found your other half con quien vas a disfrutar the rest of your life. Beyond grateful for your friendship, you've always been there for your bros and today is your special day, honored to be here. Así que a celebrar perro que la vamos a pasar increíble en tu boda!
+
+Love u bro 
+Chavez`
+    },
+    { 
+      name: 'Franco Niro', 
+      message: `Domo, 
+
+Contigo aprendí a esquiar en agua en Acapulco, que tu papá cannot let a 10-0 win against us go. 
+
+Gracias a ti, por este día, tengo nueva novia y tu estas por empezar una nueva vida. Te queremos tanto. No. Te amamos tanto que viajamos con tux's y trajes en vez de ropa en la maleta. A ensayar 3 veces como caminar. I'd do it 1000 times more. 
+
+All I can say is I love you. Thanks for making the playground of life this special and fun.`
+    },
+    { 
+      name: 'Alejandro Caraco', 
+      message: `Domo, the day has come and I couldn't be happier to be here celebrating such an important and beautiful milestone with you. It's been an honor growing up with you and seeing you go through life with such tenacity but more importantly a huge open heart. I am so grateful to call you my friend—you're the most authentic person I know and I admire you and your bravery for always staying true to your heart. I am so proud of the man you've become, but more importantly—the inner child you never let die. I love you, Caraco.`
+    },
+    { 
+      name: 'Marcos Ramirez', 
+      message: `Domo te amo wey. Tengo muchos recuerdos de nosotros. Siguele chingando eres grande. Te deseo todo lo mejor y siempre contaras conmigo.`
+    },
+    { 
+      name: 'Julian Serra', 
+      message: `Congratulations homie. I'm so happy and excited for both of you! I can't wait for you and Estefania to start this new journey on your path of life. You both will undoubtedly crush it together. I admire you a lot bro, you're a deeply authentic person, who cares for those around him, unconditionally. I'm a huge fan of your work ethic, and your by-the-horns approach to life. You're a legend!! I hope this little watch can act as a nice memento of this day and the love your homies have for you. Love you, Juli`
+    },
+    { 
+      name: 'Alex Berho', 
+      message: `Domo!!!
 The big day is here! Qué emoción estar aquí para festejar este día tan importante. Qué bonita familia han creado y seguirán creando. Eres un gran ejemplo a seguir.
 
 Hoy en la mañana me acordé de aquel día en el árbol en ASF que no paraba de llorar por irme a Miami. Como siempre, te acercaste y me animaste.
@@ -38,9 +82,13 @@ Eres un gran amigo, un hermano, y qué bendición es el tener a alguien así, in
 
 Te quiero mucho! Deseo que sean muy felices siempre. Alex Berho
 
-P.S. Te dejo el intento de un dibujo` },
-    { name: 'Jeronimo Aguilar', message: `Dominic, 
-I know we far away but always in my heart, my fellow WR. So excited to see you succeed in this new stage of life. Les deseo todo lo mejor a Bumblina y a ti. Stay close, stay happy. Happiest of days from here on!! I love you, man!` }
+P.S. Te dejo el intento de un dibujo`
+    },
+    { 
+      name: 'Jeronimo Aguilar', 
+      message: `Dominic, 
+I know we far away but always in my heart, my fellow WR. So excited to see you succeed in this new stage of life. Les deseo todo lo mejor a Bumblina y a ti. Stay close, stay happy. Happiest of days from here on!! I love you, man!`
+    }
   ]
 
   return (
